@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
+import cors from "cors";
 
 import {
   loginValidation,
@@ -39,6 +40,7 @@ const upload = multer({ storage });
 //! Позволяет читать json? который будет приходить в наших запросах
 app.use(express.json());
 //! Если перейти по адресу http://localhost:4444/uploads/<Название картинки>, то будет ошибка (так как express думает, что делается get-запрос на какой-то route? но он пробегается по каждому route, понимает, что нет нужного route и вернет 404). Для объяснения express, что есть специальная папка в которой хранятся статичные файлы (express-приложение должен проверить, что если придет запрос на /uploads, то из библиотеки express при помощи функции static проверяй: есть ли в этой папке то,что я передаю):
+app.use(cors()); //*позволяет стороннему домену делать запрос к нему
 app.use("/uploads", express.static("uploads"));
 
 app.post(

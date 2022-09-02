@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { validationResult } from "express-validator";
 
 import UserModel from "../models/User.js";
 
@@ -8,12 +7,6 @@ import UserModel from "../models/User.js";
 //*res - что передадим клиенту мы
 export const register = async (req, res) => {
   try {
-    //? Проверяем есть ли ошибки в нашем запросе
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json(errors.array());
-    }
-
     //! Шифрование пароля
     const password = req.body.password;
     //* Создаем соль (алгоритм шифрования пароля)
@@ -96,7 +89,7 @@ export const login = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({
-      message: "Не удалось зарегистрироваться",
+      message: "Не удалось войти в аккаунт",
     });
   }
 };

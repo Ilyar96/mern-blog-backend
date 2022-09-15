@@ -1,15 +1,22 @@
 import express from "express";
-import mongoose from "mongoose";
+import fs from "fs";
 import multer from "multer";
 import cors from "cors";
 
+import mongoose from "mongoose";
+
 import {
   loginValidation,
+  commentValidation,
   postCreateValidation,
   registerValidation,
 } from "./validations.js";
 
-import { UserController, PostController } from "./controllers/index.js";
+import {
+  UserController,
+  PostController,
+  CommentController,
+} from "./controllers/index.js";
 
 import { checkAuth, handleValidationError } from "./utils/index.js";
 
@@ -28,6 +35,9 @@ const app = express();
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
     //? Функция destination должна сказать, что она не получает никаких ошибок (null) и объясняет, что нужно сохранить те файлы, которые будем загружать в папку uploads. То есть объясняет, какую путь использвать
+    if (!fs.existsSync("uploads")) {
+      fs.mkdirSync("uploads");
+    }
     cb(null, "uploads");
   },
   filename: (_, file, cb) => {
@@ -57,11 +67,13 @@ app.post(
 );
 app.get("/auth/me", checkAuth, UserController.getMe);
 
-app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
+app.post("/upload", upload.single("image"), (req, res) => {
   res.json({
     url: `/uploads/${req.file.originalname}`,
   });
 }); //Указываем, что ожидаем файл под названием image
+
+app.get("/tags", PostController.getLastTags);
 
 app.get("/posts", PostController.getAll);
 app.get("/posts/:id", PostController.getOne);
@@ -81,10 +93,26 @@ app.patch(
   PostController.update
 );
 
+app.get("/comments", CommentController.getComments);
+app.get("/comments/:postId", CommentController.getAllCommentsByPost);
+app.post(
+  "/comments",
+  checkAuth,
+  commentValidation,
+  handleValidationError,
+  CommentController.createComment
+);
+app.delete(
+  "/comment/:commentId",
+  checkAuth,
+  CommentController.removeByCommentId
+);
+app.delete("/comments/:postId", checkAuth, CommentController.removeByPostId);
+
 //! Запускаем сервер. Вторым параметром задаем функцию, которая объясняет, что если наш сервер не смог запуститься, то мы вернем сообщение об этом - app.use(express.json());
-app.listen(4444, (err) => {
+app.listen(process.env.PORT || 4444, (err) => {
   if (err) {
-    return console.log(error);
+    return console.log(err);
   }
 
   console.log("Server ok");

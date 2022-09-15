@@ -1,11 +1,53 @@
 import PostModel from "../models/Post.js";
 
+export const getLastTags = async (req, res) => {
+  try {
+    const posts = await PostModel.find().sort({ createdAt: -1 }).exec();
+    const tags = posts
+      .map((obj) => {
+        return obj.tags;
+      })
+      .flat();
+
+    const lastTags = Array.from(new Set(tags)).slice(0, 5);
+    res.json(lastTags);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Не удалось получить теги",
+    });
+  }
+};
+
 export const getAll = async (req, res) => {
   try {
-    const posts = await PostModel.find().populate("user").exec(); //В populate можно передать массив связей
+    let allPosts;
+    let tag = req?.query?.tag ? { tags: req.query.tag } : {};
+    const limit = req?.query?.limit ? req.query.limit : 0;
+    const page = req?.query?.page ? req.query.page : null;
+    const sortBy = req?.query?.sortBy ? req.query.sortBy : "createdAt";
+    const order =
+      req?.query?.order && req?.query?.order.toLowerCase() === "asc" ? 1 : -1;
 
-    res.json(posts);
-  } catch (error) {
+    if (page && limit) {
+      allPosts = await PostModel.find(tag)
+        .sort({ [sortBy]: order })
+        .populate("user")
+        .exec();
+    }
+
+    const posts = await PostModel.find(tag)
+      .sort({ [sortBy]: order })
+      .limit(limit)
+      .skip(page ? limit * page - limit : 0)
+      .populate("user")
+      .exec(); //В populate можно передать массив связей
+
+    res.json({
+      data: posts,
+      pagesCount: allPosts?.length && Math.ceil(allPosts?.length / limit),
+    });
+  } catch (err) {
     console.log(err);
     res.status(500).json({
       message: "Не удалось получить статьи",
@@ -77,6 +119,7 @@ export const remove = (req, res) => {
 
         res.json({
           success: true,
+          postId,
         });
       }
     );

@@ -14,7 +14,7 @@ export const registerValidation = [
     min: 5,
   }),
   body("fullName", "Укажите имя").isLength({ min: 3 }),
-  body("avatar", "Неверная ссылка на аватарку").optional().isURL(), //Если придет информация, то проверяем ссылка ли она
+  body("avatar", "Неверная ссылка на аватарку").optional().isString(), //Если придет информация, то проверяем ссылка ли она
 ];
 
 export const postCreateValidation = [
@@ -30,4 +30,17 @@ export const postCreateValidation = [
     .isString(),
   body("tags", "Неверный формат тегов (укажите массив)").optional().isArray(),
   body("imageUrl", "Неверная ссылка на изображение").optional().isString(),
+];
+
+export const commentValidation = [
+  body("text", "Введите комментарий")
+    .isLength({
+      min: 1,
+    })
+    .isString(),
+  body("postId", "Введите id поста")
+    .isLength({
+      min: 5,
+    })
+    .isString(),
 ];

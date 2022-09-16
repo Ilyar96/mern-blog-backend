@@ -1,4 +1,6 @@
 import PostModel from "../models/Post.js";
+import CommentModel from "../models/Comment.js";
+import async from "async";
 
 export const getLastTags = async (req, res) => {
   try {
@@ -97,32 +99,68 @@ export const getOne = (req, res) => {
 
 export const remove = (req, res) => {
   try {
+    const queries = [];
     const postId = req.params.id;
 
-    PostModel.findOneAndDelete(
-      {
-        _id: postId,
-      },
-      (err, doc) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({
-            message: "Не удалось удалить статью",
-          });
-        }
+    queries.push((cb) => {
+      PostModel.findOneAndDelete(
+        {
+          _id: postId,
+        },
+        (err, doc) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              message: "Не удалось удалить статью",
+            });
+          }
 
-        if (!doc) {
-          return res.status(404).json({
-            message: "Статья не найдена",
-          });
+          if (!doc) {
+            return res.status(404).json({
+              message: "Статья не найдена",
+            });
+          }
         }
+      );
+    });
 
-        res.json({
-          success: true,
+    queries.push((cb) => {
+      CommentModel.deleteMany(
+        {
           postId,
-        });
+        },
+        (err, doc) => {
+          if (err) {
+            console.log(err);
+            res.status(500).json({
+              message: "Не удалось удалить комментарии",
+            });
+          }
+
+          if (!doc) {
+            return res.status(404).json({
+              message: "Комментарии не найдены",
+            });
+          }
+
+          res.json({
+            success: true,
+            postId,
+          });
+        }
+      );
+    });
+
+    async.parallel(queries, function (err, docs) {
+      if (err) {
+        throw err;
       }
-    );
+
+      res.json({
+        success: true,
+        postId,
+      });
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({

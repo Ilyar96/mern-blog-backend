@@ -99,7 +99,6 @@ app.delete(
   checkAuth,
   CommentController.removeByCommentId
 );
-app.delete("/comments/:postId", checkAuth, CommentController.removeByPostId);
 
 app.listen(process.env.PORT || 4444, (err) => {
   if (err) {

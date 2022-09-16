@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
 
 import UserModel from "../models/User.js";
+
+dotenv.config();
 
 export const register = async (req, res) => {
   try {

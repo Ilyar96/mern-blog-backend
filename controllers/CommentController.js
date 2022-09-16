@@ -125,39 +125,3 @@ export const removeByCommentId = (req, res) => {
     });
   }
 };
-
-export const removeByPostId = (req, res) => {
-  try {
-    const postId = req.params.postId;
-
-    CommentModel.deleteMany(
-      {
-        postId,
-      },
-      (err, doc) => {
-        if (err) {
-          console.log(err);
-          res.status(500).json({
-            message: "Не удалось удалить комментарии",
-          });
-        }
-
-        if (!doc) {
-          return res.status(404).json({
-            message: "Комментарии не найдены",
-          });
-        }
-
-        res.json({
-          success: true,
-          postId,
-        });
-      }
-    );
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      message: "Не удалось удалить комментарии",
-    });
-  }
-};

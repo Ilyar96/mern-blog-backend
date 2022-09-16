@@ -17,12 +17,12 @@ export const registerValidation = [
 ];
 
 export const postCreateValidation = [
-  body("title", "Введите заголовок статьи")
+  body("title", "Заголовок статьи должен содержать не менее 3 символов")
     .isLength({
       min: 3,
     })
     .isString(),
-  body("text", "Введите текст статьи")
+  body("text", "Текст статьи должен содержать не менее 10 символов")
     .isLength({
       min: 10,
     })

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-//Модель пользователя
 const CommentSchema = new mongoose.Schema(
   {
     text: {

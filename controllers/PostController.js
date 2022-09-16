@@ -41,7 +41,7 @@ export const getAll = async (req, res) => {
       .limit(limit)
       .skip(page ? limit * page - limit : 0)
       .populate("user")
-      .exec(); //В populate можно передать массив связей
+      .exec();
 
     res.json({
       data: posts,

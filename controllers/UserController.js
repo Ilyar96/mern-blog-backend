@@ -3,15 +3,11 @@ import bcrypt from "bcrypt";
 
 import UserModel from "../models/User.js";
 
-//*req - что прислал клиент
-//*res - что передадим клиенту мы
 export const register = async (req, res) => {
   try {
     //! Шифрование пароля
     const password = req.body.password;
-    //* Создаем соль (алгоритм шифрования пароля)
     const salt = await bcrypt.genSalt(10);
-    //* Шифруем пароль
     const hash = await bcrypt.hash(password, salt);
 
     //! Создаем пользователя
@@ -30,13 +26,12 @@ export const register = async (req, res) => {
       },
       "secret123",
       {
-        expiresIn: "30d", //Будет валидным 30 дней
+        expiresIn: "30d",
       }
     );
 
     const { passwordHash, ...userData } = user._doc;
 
-    //! Можно возвращать только 1 ответ (express будет ругаться)
     res.json({
       ...userData,
       token,

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-//Модель пользователя
 const PostSchema = new mongoose.Schema(
   {
     title: {
@@ -21,13 +20,13 @@ const PostSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", //! Делаем связь между 2мя таблицами - ссылаясь по id (предыдущая строка) на схему User (relationship)
+      ref: "User",
       required: true,
     },
     imageUrl: String,
   },
   {
-    timestamps: true, //Автоматически прикрутит дату создания
+    timestamps: true,
   }
 );
 

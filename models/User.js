@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-//Модель пользователя
 const UserSchema = new mongoose.Schema(
   {
     fullName: {
@@ -19,7 +18,7 @@ const UserSchema = new mongoose.Schema(
     avatarUrl: String,
   },
   {
-    timestamps: true, //Автоматически прикрутит дату создания
+    timestamps: true,
   }
 );
 

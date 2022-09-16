@@ -20,12 +20,8 @@ import {
 
 import { checkAuth, handleValidationError } from "./utils/index.js";
 
-//! Обясняем, что хотим использовать mongodb (ключ получаем из базы данных - Connect to Cluster0 (не забыть указать актуальный пароль пользователя))
-//* Добавили после .mongodb.net blog и mongo db автоатически создал БД blog. Также сам определил, что есть таблица users и создал его
 mongoose
-  .connect(
-    "mongodb+srv://admin:d-wV5GKCQqbb_6g@cluster0.0qmzkcs.mongodb.net/blog?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("DB ok"))
   .catch(() => console.log("DB error"));
 
@@ -34,7 +30,6 @@ const app = express();
 //! Создаем хранилище, где будем сохранять картинки
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
-    //? Функция destination должна сказать, что она не получает никаких ошибок (null) и объясняет, что нужно сохранить те файлы, которые будем загружать в папку uploads. То есть объясняет, какую путь использвать
     if (!fs.existsSync("uploads")) {
       fs.mkdirSync("uploads");
     }
@@ -47,9 +42,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-//! Позволяет читать json? который будет приходить в наших запросах
 app.use(express.json());
-//! Если перейти по адресу http://localhost:4444/uploads/<Название картинки>, то будет ошибка (так как express думает, что делается get-запрос на какой-то route? но он пробегается по каждому route, понимает, что нет нужного route и вернет 404). Для объяснения express, что есть специальная папка в которой хранятся статичные файлы (express-приложение должен проверить, что если придет запрос на /uploads, то из библиотеки express при помощи функции static проверяй: есть ли в этой папке то,что я передаю):
 app.use(cors()); //*позволяет стороннему домену делать запрос к нему
 app.use("/uploads", express.static("uploads"));
 
@@ -71,7 +64,7 @@ app.post("/upload", upload.single("image"), (req, res) => {
   res.json({
     url: `/uploads/${req.file.originalname}`,
   });
-}); //Указываем, что ожидаем файл под названием image
+});
 
 app.get("/tags", PostController.getLastTags);
 
@@ -83,7 +76,7 @@ app.post(
   postCreateValidation,
   handleValidationError,
   PostController.create
-); // Сначала ожидается выполнение checkAuth
+);
 app.delete("/posts/:id", checkAuth, PostController.remove);
 app.patch(
   "/posts/:id",
@@ -109,7 +102,6 @@ app.delete(
 );
 app.delete("/comments/:postId", checkAuth, CommentController.removeByPostId);
 
-//! Запускаем сервер. Вторым параметром задаем функцию, которая объясняет, что если наш сервер не смог запуститься, то мы вернем сообщение об этом - app.use(express.json());
 app.listen(process.env.PORT || 4444, (err) => {
   if (err) {
     return console.log(err);

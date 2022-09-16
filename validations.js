@@ -1,6 +1,5 @@
 import { body } from "express-validator";
 
-//! При помощи body проверяем, есть ли в теле нашего запроса какая-то информация и будем ее валидировать
 export const loginValidation = [
   body("email", "Неверный формат почты").isEmail(),
   body("password", "Пароль должен быть минимум 5 символов").isLength({
@@ -14,7 +13,7 @@ export const registerValidation = [
     min: 5,
   }),
   body("fullName", "Укажите имя").isLength({ min: 3 }),
-  body("avatar", "Неверная ссылка на аватарку").optional().isString(), //Если придет информация, то проверяем ссылка ли она
+  body("avatar", "Неверная ссылка на аватарку").optional().isString(),
 ];
 
 export const postCreateValidation = [

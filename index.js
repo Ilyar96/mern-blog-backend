@@ -21,7 +21,9 @@ import {
 import { checkAuth, handleValidationError } from "./utils/index.js";
 
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(
+    "mongodb+srv://admin:d-wV5GKCQqbb_6g@cluster0.0qmzkcs.mongodb.net/blog?retryWrites=true&w=majority"
+  )
   .then(() => console.log("DB ok"))
   .catch(() => console.log("DB error"));
 
@@ -42,7 +44,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(express.json());
-app.use(cors()); //*позволяет стороннему домену делать запрос к нему
+app.use(cors());
 app.use("/uploads", express.static("uploads"));
 
 app.post(

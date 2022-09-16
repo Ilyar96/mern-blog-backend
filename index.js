@@ -27,7 +27,6 @@ mongoose
 
 const app = express();
 
-//! Создаем хранилище, где будем сохранять картинки
 const storage = multer.diskStorage({
   destination: (_, __, cb) => {
     if (!fs.existsSync("uploads")) {
